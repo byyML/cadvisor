@@ -23,6 +23,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -111,6 +112,7 @@ var (
 		container.CPUTopologyMetrics:             struct{}{},
 		container.ResctrlMetrics:                 struct{}{},
 	}
+	ignoreSpecificMetrics BlackList = make(map[string]struct{})
 )
 
 type metricSetValue struct {
@@ -140,9 +142,39 @@ func (ml *metricSetValue) Set(value string) error {
 	return nil
 }
 
+type BlackList map[string]struct{}
+
+func (ms *BlackList) String() string {
+	s := *ms
+	ss := s.asSlice()
+	sort.Strings(ss)
+	return strings.Join(ss, ",")
+}
+
+// Set converts a comma-separated string of metrics into a slice and appends it to the MetricSet.
+func (ms *BlackList) Set(value string) error {
+	s := *ms
+	metrics := strings.Split(value, ",")
+	for _, metric := range metrics {
+		metric = strings.TrimSpace(metric)
+		if len(metric) != 0 {
+			s[metric] = struct{}{}
+		}
+	}
+	return nil
+}
+// asSlice returns the MetricSet in the form of plain string slice.
+func (ms BlackList) asSlice() []string {
+	metrics := []string{}
+	for metric := range ms {
+		metrics = append(metrics, metric)
+	}
+	return metrics
+}
+
 func init() {
 	flag.Var(&ignoreMetrics, "disable_metrics", "comma-separated list of `metrics` to be disabled. Options are 'accelerator', 'cpu_topology','disk', 'diskIO', 'memory_numa', 'network', 'tcp', 'udp', 'percpu', 'sched', 'process', 'hugetlb', 'referenced_memory', 'resctrl'.")
-
+	flag.Var(&ignoreSpecificMetrics, "disable_specific_metrics", "Comma-separated list of metrics not to be enabled. This list comprises of exact metric names and/or regex patterns. ")
 	// Default logging verbosity to V(2)
 	flag.Set("v", "2")
 }
@@ -152,13 +184,14 @@ func main() {
 	defer klog.Flush()
 	flag.Parse()
 
+
 	if *versionFlag {
 		fmt.Printf("cAdvisor version %s (%s)\n", version.Info["version"], version.Info["revision"])
 		os.Exit(0)
 	}
 
 	includedMetrics := toIncludedMetrics(ignoreMetrics.MetricSet)
-
+	BlackList, err := metrics.New(ignoreSpecificMetrics)
 	setMaxProcs()
 
 	memoryStorage, err := NewMemoryStorage()
@@ -170,7 +203,7 @@ func main() {
 
 	collectorHttpClient := createCollectorHttpClient(*collectorCert, *collectorKey)
 
-	resourceManager, err := manager.New(memoryStorage, sysFs, housekeepingConfig, includedMetrics, &collectorHttpClient, strings.Split(*rawCgroupPrefixWhiteList, ","), *perfEvents)
+	resourceManager, err := manager.New(memoryStorage, sysFs, housekeepingConfig, includedMetrics, BlackList, &collectorHttpClient, strings.Split(*rawCgroupPrefixWhiteList, ","), *perfEvents)
 	if err != nil {
 		klog.Fatalf("Failed to create a manager: %s", err)
 	}
@@ -197,7 +230,7 @@ func main() {
 	}
 
 	// Register Prometheus collector to gather information about containers, Go runtime, processes, and machine
-	cadvisorhttp.RegisterPrometheusHandler(mux, resourceManager, *prometheusEndpoint, containerLabelFunc, includedMetrics)
+	cadvisorhttp.RegisterPrometheusHandler(mux, resourceManager, *prometheusEndpoint, containerLabelFunc, includedMetrics,BlackList)
 
 	// Start the manager.
 	if err := resourceManager.Start(); err != nil {
