@@ -204,7 +204,7 @@ func main() {
 
 	collectorHttpClient := createCollectorHttpClient(*collectorCert, *collectorKey)
 
-	resourceManager, err := manager.New(memoryStorage, sysFs, housekeepingConfig, includedMetrics, BlackList, &collectorHttpClient, strings.Split(*rawCgroupPrefixWhiteList, ","), *perfEvents)
+	resourceManager, err := manager.New(memoryStorage, sysFs, housekeepingConfig, includedMetrics, &collectorHttpClient, strings.Split(*rawCgroupPrefixWhiteList, ","), *perfEvents, BlackList)
 	if err != nil {
 		klog.Fatalf("Failed to create a manager: %s", err)
 	}

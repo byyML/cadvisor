@@ -111,7 +111,7 @@ func RegisterPrometheusHandler(mux httpmux.Mux, resourceManager manager.Manager,
 
 		r := prometheus.NewRegistry()
 		r.MustRegister(
-			metrics.NewPrometheusCollector(resourceManager, f, includedMetrics, blackList, clock.RealClock{}, opts),
+			metrics.NewPrometheusCollector(resourceManager, f, includedMetrics, clock.RealClock{}, opts, blackList),
 			machineCollector,
 			goCollector,
 			processCollector,
