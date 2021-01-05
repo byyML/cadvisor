@@ -259,7 +259,7 @@ type manager struct {
 	maxHousekeepingInterval  time.Duration
 	allowDynamicHousekeeping bool
 	includedMetrics          container.MetricSet
-	BlackList                metrics.BlackList
+	BlackList                *metrics.BlackList
 	containerWatchers        []watcher.ContainerWatcher
 	eventsChannel            chan watcher.ContainerEvent
 	collectorHTTPClient      *http.Client
