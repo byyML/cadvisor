@@ -112,7 +112,7 @@ var (
 		container.CPUTopologyMetrics:             struct{}{},
 		container.ResctrlMetrics:                 struct{}{},
 	}
-	ignoreSpecificMetrics BlackList = make(map[string]struct{})
+	ignoreSpecificMetrics DenyList = make(map[string]struct{})
 )
 
 type metricSetValue struct {
@@ -142,9 +142,9 @@ func (ml *metricSetValue) Set(value string) error {
 	return nil
 }
 
-type BlackList map[string]struct{}
+type DenyList map[string]struct{}
 
-func (ms *BlackList) String() string {
+func (ms *DenyList) String() string {
 	s := *ms
 	ss := s.asSlice()
 	sort.Strings(ss)
@@ -152,7 +152,7 @@ func (ms *BlackList) String() string {
 }
 
 // Set converts a comma-separated string of metrics into a slice and appends it to the MetricSet.
-func (ms *BlackList) Set(value string) error {
+func (ms *DenyList) Set(value string) error {
 	s := *ms
 	metrics := strings.Split(value, ",")
 	for _, metric := range metrics {
@@ -164,7 +164,7 @@ func (ms *BlackList) Set(value string) error {
 	return nil
 }
 // asSlice returns the MetricSet in the form of plain string slice.
-func (ms BlackList) asSlice() []string {
+func (ms DenyList) asSlice() []string {
 	metrics := []string{}
 	for metric := range ms {
 		metrics = append(metrics, metric)
@@ -191,8 +191,8 @@ func main() {
 	}
 
 	includedMetrics := toIncludedMetrics(ignoreMetrics.MetricSet)
-	BlackList, err := metrics.New(ignoreSpecificMetrics)
-	BlackList.Parse()
+	DenyList, err := metrics.New(ignoreSpecificMetrics)
+	DenyList.Parse()
 	setMaxProcs()
 
 	memoryStorage, err := NewMemoryStorage()
@@ -204,7 +204,7 @@ func main() {
 
 	collectorHttpClient := createCollectorHttpClient(*collectorCert, *collectorKey)
 
-	resourceManager, err := manager.New(memoryStorage, sysFs, housekeepingConfig, includedMetrics, &collectorHttpClient, strings.Split(*rawCgroupPrefixWhiteList, ","), *perfEvents, BlackList)
+	resourceManager, err := manager.New(memoryStorage, sysFs, housekeepingConfig, includedMetrics, &collectorHttpClient, strings.Split(*rawCgroupPrefixWhiteList, ","), *perfEvents, DenyList)
 	if err != nil {
 		klog.Fatalf("Failed to create a manager: %s", err)
 	}
@@ -231,7 +231,7 @@ func main() {
 	}
 
 	// Register Prometheus collector to gather information about containers, Go runtime, processes, and machine
-	cadvisorhttp.RegisterPrometheusHandler(mux, resourceManager, *prometheusEndpoint, containerLabelFunc, includedMetrics,BlackList)
+	cadvisorhttp.RegisterPrometheusHandler(mux, resourceManager, *prometheusEndpoint, containerLabelFunc, includedMetrics,DenyList)
 
 	// Start the manager.
 	if err := resourceManager.Start(); err != nil {

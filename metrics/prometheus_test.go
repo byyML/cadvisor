@@ -33,11 +33,12 @@ import (
 var now = clock.NewFakeClock(time.Unix(1395066363, 0))
 
 func TestPrometheusCollector(t *testing.T) {
+	bl, _ := New(map[string]struct{}{})
 	c := NewPrometheusCollector(testSubcontainersInfoProvider{}, func(container *info.ContainerInfo) map[string]string {
 		s := DefaultContainerLabels(container)
 		s["zone.name"] = "hello"
 		return s
-	}, container.AllMetrics, now, v2.RequestOptions{})
+	}, container.AllMetrics, now, v2.RequestOptions{}, bl)
 	reg := prometheus.NewRegistry()
 	reg.MustRegister(c)
 
