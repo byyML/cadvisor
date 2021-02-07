@@ -1726,8 +1726,8 @@ func NewPrometheusCollector(i infoProvider, f ContainerLabelsFunc, includedMetri
 		}...)
 	}
 	var filtered []containerMetric
-	for _, val := range c.containerMetrics{
-		if !denyList.IsIncluded(val.name){
+	for _, val := range c.containerMetrics {
+		if !denyList.IsIncluded(val.name) {
 			filtered = append(filtered, val)
 		}
 	}
