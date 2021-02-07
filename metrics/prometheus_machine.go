@@ -67,7 +67,7 @@ type PrometheusMachineCollector struct {
 }
 
 // NewPrometheusMachineCollector returns a new PrometheusCollector.
-func NewPrometheusMachineCollector(i infoProvider, includedMetrics container.MetricSe, denyList *DenyList) *PrometheusMachineCollector {
+func NewPrometheusMachineCollector(i infoProvider, includedMetrics container.MetricSet, denyList *DenyList) *PrometheusMachineCollector {
 	c := &PrometheusMachineCollector{
 
 		infoProvider: i,
