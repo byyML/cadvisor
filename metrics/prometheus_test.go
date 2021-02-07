@@ -33,12 +33,12 @@ import (
 var now = clock.NewFakeClock(time.Unix(1395066363, 0))
 
 func TestPrometheusCollector(t *testing.T) {
-	bl, _ := New(map[string]struct{}{})
+	denyList, _ := New(map[string]struct{}{})
 	c := NewPrometheusCollector(testSubcontainersInfoProvider{}, func(container *info.ContainerInfo) map[string]string {
 		s := DefaultContainerLabels(container)
 		s["zone.name"] = "hello"
 		return s
-	}, container.AllMetrics, now, v2.RequestOptions{}, bl)
+	}, container.AllMetrics, now, v2.RequestOptions{}, denyList)
 	reg := prometheus.NewRegistry()
 	reg.MustRegister(c)
 
@@ -46,6 +46,7 @@ func TestPrometheusCollector(t *testing.T) {
 }
 
 func TestPrometheusCollectorWithPerfAggregated(t *testing.T) {
+	denyList, _ := New(map[string]struct{}{})
 	metrics := container.MetricSet{
 		container.PerfMetrics: struct{}{},
 	}
@@ -53,7 +54,7 @@ func TestPrometheusCollectorWithPerfAggregated(t *testing.T) {
 		s := DefaultContainerLabels(container)
 		s["zone.name"] = "hello"
 		return s
-	}, metrics, now, v2.RequestOptions{})
+	}, metrics, now, v2.RequestOptions{}, denyList)
 	reg := prometheus.NewRegistry()
 	reg.MustRegister(c)
 
@@ -73,6 +74,7 @@ func testPrometheusCollector(t *testing.T, gatherer prometheus.Gatherer, metrics
 }
 
 func TestPrometheusCollector_scrapeFailure(t *testing.T) {
+	denyList, _ := New(map[string]struct{}{})
 	provider := &erroringSubcontainersInfoProvider{
 		successfulProvider: testSubcontainersInfoProvider{},
 		shouldFail:         true,
@@ -82,7 +84,7 @@ func TestPrometheusCollector_scrapeFailure(t *testing.T) {
 		s := DefaultContainerLabels(container)
 		s["zone.name"] = "hello"
 		return s
-	}, container.AllMetrics, now, v2.RequestOptions{})
+	}, container.AllMetrics, now, v2.RequestOptions{}, denyList)
 	reg := prometheus.NewRegistry()
 	reg.MustRegister(c)
 
@@ -94,7 +96,8 @@ func TestPrometheusCollector_scrapeFailure(t *testing.T) {
 }
 
 func TestNewPrometheusCollectorWithPerf(t *testing.T) {
-	c := NewPrometheusCollector(&mockInfoProvider{}, mockLabelFunc, container.MetricSet{container.PerfMetrics: struct{}{}}, now, v2.RequestOptions{})
+	denyList, _ := New(map[string]struct{}{})
+	c := NewPrometheusCollector(&mockInfoProvider{}, mockLabelFunc, container.MetricSet{container.PerfMetrics: struct{}{}}, now, v2.RequestOptions{}, denyList)
 	assert.Len(t, c.containerMetrics, 5)
 	names := []string{}
 	for _, m := range c.containerMetrics {
@@ -108,11 +111,12 @@ func TestNewPrometheusCollectorWithPerf(t *testing.T) {
 }
 
 func TestNewPrometheusCollectorWithRequestOptions(t *testing.T) {
+	denyList, _ := New(map[string]struct{}{})
 	p := mockInfoProvider{}
 	opts := v2.RequestOptions{
 		IdType: "docker",
 	}
-	c := NewPrometheusCollector(&p, mockLabelFunc, container.AllMetrics, now, opts)
+	c := NewPrometheusCollector(&p, mockLabelFunc, container.AllMetrics, now, opts, denyList)
 	ch := make(chan prometheus.Metric, 10)
 	c.Collect(ch)
 	assert.Equal(t, p.options, opts)
