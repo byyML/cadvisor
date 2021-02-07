@@ -7,8 +7,8 @@ import (
 
 // DenyList encapsulates the logic needed to filter based on a string.
 type DenyList struct {
-	list        map[string]struct{}
-	rList       []*regexp.Regexp
+	list  map[string]struct{}
+	rList []*regexp.Regexp
 }
 
 // New constructs a new DenyList based on a white- and a
@@ -19,7 +19,7 @@ func New(b map[string]struct{}) (*DenyList, error) {
 	list = black
 
 	return &DenyList{
-		list:        list,
+		list: list,
 	}, nil
 }
 
@@ -37,7 +37,6 @@ func (l *DenyList) Parse() error {
 	return nil
 }
 
-
 // IsIncluded returns if the given item is included.
 func (l *DenyList) IsIncluded(item string) bool {
 	var matched bool
@@ -50,7 +49,6 @@ func (l *DenyList) IsIncluded(item string) bool {
 
 	return matched
 }
-
 
 // Status returns the status of the DenyList that can e.g. be passed into
 // a logger.
