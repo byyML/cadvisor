@@ -163,6 +163,7 @@ func (ms *DenyList) Set(value string) error {
 	}
 	return nil
 }
+
 // asSlice returns the MetricSet in the form of plain string slice.
 func (ms DenyList) asSlice() []string {
 	metrics := []string{}
@@ -183,7 +184,6 @@ func main() {
 	klog.InitFlags(nil)
 	defer klog.Flush()
 	flag.Parse()
-
 
 	if *versionFlag {
 		fmt.Printf("cAdvisor version %s (%s)\n", version.Info["version"], version.Info["revision"])
@@ -231,7 +231,7 @@ func main() {
 	}
 
 	// Register Prometheus collector to gather information about containers, Go runtime, processes, and machine
-	cadvisorhttp.RegisterPrometheusHandler(mux, resourceManager, *prometheusEndpoint, containerLabelFunc, includedMetrics,DenyList)
+	cadvisorhttp.RegisterPrometheusHandler(mux, resourceManager, *prometheusEndpoint, containerLabelFunc, includedMetrics, DenyList)
 
 	// Start the manager.
 	if err := resourceManager.Start(); err != nil {
