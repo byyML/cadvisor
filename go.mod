@@ -5,7 +5,6 @@ go 1.13
 require (
 	cloud.google.com/go v0.54.0
 	github.com/Microsoft/go-winio v0.4.15 // indirect
-	github.com/ashanbrown/forbidigo v1.1.0 // indirect
 	github.com/aws/aws-sdk-go v1.35.24
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/containerd/containerd v1.4.3
@@ -15,21 +14,13 @@ require (
 	github.com/docker/docker v20.10.2+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units v0.4.0
-	github.com/esimonov/ifshort v1.0.1 // indirect
 	github.com/euank/go-kmsg-parser v2.0.0+incompatible
-	github.com/go-critic/go-critic v0.5.4 // indirect
 	github.com/gogo/protobuf v1.3.1
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
-	github.com/gostaticanalysis/analysisutil v0.6.1 // indirect
-	github.com/jingyugao/rowserrcheck v0.0.0-20210130005344-c6a0c12dd98d // indirect
-	github.com/jirfag/go-printf-func-name v0.0.0-20200119135958-7558a9eaa5af // indirect
 	github.com/karrick/godirwalk v1.16.1
 	github.com/kr/pretty v0.2.0 // indirect
-	github.com/magiconair/properties v1.8.4 // indirect
-	github.com/matoous/godox v0.0.0-20200801072554-4fb83dc2941e // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
-	github.com/mbilski/exhaustivestruct v1.2.0 // indirect
 	github.com/mindprince/gonvml v0.0.0-20190828220739-9ebdce4bb989
 	github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible
 	github.com/moby/sys/mountinfo v0.4.0
@@ -44,18 +35,9 @@ require (
 	github.com/prometheus/client_model v0.2.0
 	github.com/prometheus/common v0.10.0
 	github.com/prometheus/procfs v0.2.0 // indirect
-	github.com/quasilyte/regex/syntax v0.0.0-20200805063351-8f842688393c // indirect
-	github.com/spf13/afero v1.5.1 // indirect
-	github.com/spf13/cast v1.3.1 // indirect
-	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
-	github.com/tdakkota/asciicheck v0.0.0-20200416200610-e657995f937b // indirect
-	github.com/tetafro/godot v1.4.4 // indirect
-	github.com/timakin/bodyclose v0.0.0-20200424151742-cb6215831a94 // indirect
-	github.com/tomarrell/wrapcheck v0.0.0-20201130113247-1683564d9756 // indirect
 	github.com/vishvananda/netns v0.0.0-20200728191858-db3c7e526aae // indirect
-	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c
 	golang.org/x/text v0.3.5 // indirect
@@ -64,8 +46,8 @@ require (
 	google.golang.org/genproto v0.0.0-20201110150050-8816d57aaa9a // indirect
 	google.golang.org/grpc v1.27.1
 	google.golang.org/protobuf v1.25.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools/v3 v3.0.3 // indirect
 	k8s.io/klog/v2 v2.2.0
 	k8s.io/utils v0.0.0-20201110183641-67b214c5f920
-	mvdan.cc/unparam v0.0.0-20210104141923-aac4ce9116a7 // indirect
 )
