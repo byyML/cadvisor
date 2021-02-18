@@ -192,7 +192,6 @@ func main() {
 
 	includedMetrics := toIncludedMetrics(ignoreMetrics.MetricSet)
 	DenyList, err := metrics.NewDenyList(ignoreSpecificMetrics)
-	DenyList.Parse()
 	setMaxProcs()
 
 	memoryStorage, err := NewMemoryStorage()
