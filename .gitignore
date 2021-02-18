@@ -12,6 +12,4 @@ cadvisor
 .idea/
 *.iml
 *.swp
-go.mod
-go.sum
-.gitignore
+
