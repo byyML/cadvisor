@@ -20,22 +20,16 @@ import (
 
 // DenyList encapsulates the logic needed to filter based on a string.
 type DenyList struct {
-	list  map[string]struct{}
 	rList []*regexp.Regexp
 }
 
 // New constructs a new DenyList based on a white- and a
 // DenyList. Only one of them can be not empty.
-// New constructs a new DenyList based on a white- and a
-// DenyList. Only one of them can be not empty.
 func NewDenyList(b map[string]struct{}) (*DenyList, error) {
-	black := copy(b)
-	list := black
-	l := &DenyList{
-		list: list,
-	}
+
+	l := &DenyList{}
 	var regs []*regexp.Regexp
-	for item := range l.list {
+	for item := range b {
 		r, err := regexp.Compile(item)
 		if err != nil {
 			return nil, err
@@ -58,12 +52,4 @@ func (l *DenyList) IsDenied(item string) bool {
 	}
 
 	return matched
-}
-
-func copy(l map[string]struct{}) map[string]struct{} {
-	newList := map[string]struct{}{}
-	for k, v := range l {
-		newList[k] = v
-	}
-	return newList
 }
