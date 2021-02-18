@@ -26,30 +26,29 @@ type DenyList struct {
 
 // New constructs a new DenyList based on a white- and a
 // DenyList. Only one of them can be not empty.
+// New constructs a new DenyList based on a white- and a
+// DenyList. Only one of them can be not empty.
 func NewDenyList(b map[string]struct{}) (*DenyList, error) {
-	list := copyList(b)
-
-	return &DenyList{
+	black := copy(b)
+	list := black
+	l := &DenyList{
 		list: list,
-	}, nil
-}
-
-// Parse parses and compiles all of the regexes in the DenyList.
-func (l *DenyList) Parse() error {
-	var regexes []*regexp.Regexp
+	}
+	var regs []*regexp.Regexp
 	for item := range l.list {
 		r, err := regexp.Compile(item)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		regexes = append(regexes, r)
+		regs = append(regs, r)
 	}
-	l.rList = regexes
-	return nil
+	l.rList = regs
+	return l, nil
 }
 
+
 // IsIncluded returns if the given item is included.
-func (l *DenyList) IsIncluded(item string) bool {
+func (l *DenyList) IsDenied(item string) bool {
 	var matched bool
 	for _, r := range l.rList {
 		matched = r.MatchString(item)
@@ -61,7 +60,7 @@ func (l *DenyList) IsIncluded(item string) bool {
 	return matched
 }
 
-func copyList(l map[string]struct{}) map[string]struct{} {
+func copy(l map[string]struct{}) map[string]struct{} {
 	newList := map[string]struct{}{}
 	for k, v := range l {
 		newList[k] = v
