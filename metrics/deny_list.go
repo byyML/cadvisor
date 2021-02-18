@@ -40,7 +40,6 @@ func NewDenyList(b map[string]struct{}) (*DenyList, error) {
 	return l, nil
 }
 
-
 // IsIncluded returns if the given item is included.
 func (l *DenyList) IsDenied(item string) bool {
 	var matched bool
