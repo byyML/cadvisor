@@ -194,7 +194,7 @@ func NewPrometheusMachineCollector(i infoProvider, includedMetrics container.Met
 	}
 	var filtered []machineMetric
 	for _, val := range c.machineMetrics {
-		if !denyList.IsIncluded(val.name) {
+		if !denyList.IsDenied(val.name) {
 			filtered = append(filtered, val)
 		}
 	}
