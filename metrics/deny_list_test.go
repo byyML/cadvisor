@@ -42,7 +42,7 @@ func TestNewDenyList(t *testing.T) {
 	reg := prometheus.NewRegistry()
 	reg.MustRegister(c)
 
-	testDenyList_IsDenied(t, reg, "testdata/prometheus_metrics_denylist")
+	testDenyListIsDenied(t, reg, "testdata/prometheus_metrics_denylist")
 
 }
 
