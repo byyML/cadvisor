@@ -29,7 +29,7 @@ import (
 )
 
 var (
-	ignoreSpecificMetrics = []string{"^machine_(memory|cpu).*", "^container_fs_*", "^container_cpu_*", "^container_blkio.*"}
+	ignoreSpecificMetrics = []string{"^machine_(memory|cpu).*", "^container_fs_*", "^container_blkio.*", "^container_cpu_*"}
 )
 
 func TestNewDenyList(t *testing.T) {
