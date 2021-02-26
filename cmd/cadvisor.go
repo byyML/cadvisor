@@ -177,7 +177,7 @@ func main() {
 	}
 
 	includedMetrics := toIncludedMetrics(ignoreMetrics.MetricSet)
-	DenyList, err := metrics.NewDenyList(ignoreSpecificMetrics)
+	denyList, err := metrics.NewDenyList(ignoreSpecificMetrics)
 	setMaxProcs()
 
 	memoryStorage, err := NewMemoryStorage()
@@ -189,7 +189,7 @@ func main() {
 
 	collectorHttpClient := createCollectorHttpClient(*collectorCert, *collectorKey)
 
-	resourceManager, err := manager.New(memoryStorage, sysFs, housekeepingConfig, includedMetrics, &collectorHttpClient, strings.Split(*rawCgroupPrefixWhiteList, ","), *perfEvents, DenyList)
+	resourceManager, err := manager.New(memoryStorage, sysFs, housekeepingConfig, includedMetrics, &collectorHttpClient, strings.Split(*rawCgroupPrefixWhiteList, ","), *perfEvents, denyList)
 	if err != nil {
 		klog.Fatalf("Failed to create a manager: %s", err)
 	}
@@ -216,7 +216,7 @@ func main() {
 	}
 
 	// Register Prometheus collector to gather information about containers, Go runtime, processes, and machine
-	cadvisorhttp.RegisterPrometheusHandler(mux, resourceManager, *prometheusEndpoint, containerLabelFunc, includedMetrics, DenyList)
+	cadvisorhttp.RegisterPrometheusHandler(mux, resourceManager, *prometheusEndpoint, containerLabelFunc, includedMetrics, denyList)
 
 	// Start the manager.
 	if err := resourceManager.Start(); err != nil {
