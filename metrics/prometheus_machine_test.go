@@ -31,7 +31,7 @@ const machineMetricsFile = "testdata/prometheus_machine_metrics"
 const machineMetricsFailureFile = "testdata/prometheus_machine_metrics_failure"
 
 func TestPrometheusMachineCollector(t *testing.T) {
-	denyList, _ := NewDenyList(map[string]struct{}{})
+	denyList, _ := NewDenyList([]string{})
 	collector := NewPrometheusMachineCollector(testSubcontainersInfoProvider{}, container.AllMetrics, denyList)
 	registry := prometheus.NewRegistry()
 	registry.MustRegister(collector)
@@ -52,7 +52,7 @@ func TestPrometheusMachineCollector(t *testing.T) {
 }
 
 func TestPrometheusMachineCollectorWithFailure(t *testing.T) {
-	denyList, _ := NewDenyList(map[string]struct{}{})
+	denyList, _ := NewDenyList([]string{})
 	provider := &erroringSubcontainersInfoProvider{
 		successfulProvider: testSubcontainersInfoProvider{},
 		shouldFail:         true,

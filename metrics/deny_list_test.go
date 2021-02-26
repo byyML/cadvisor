@@ -15,19 +15,23 @@
 package metrics
 
 import (
+	"bytes"
 	"github.com/google/cadvisor/container"
 	info "github.com/google/cadvisor/info/v1"
 	v2 "github.com/google/cadvisor/info/v2"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
+	"github.com/prometheus/common/expfmt"
+	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"os"
 	"testing"
 )
 
-
 var (
-	ignoreSpecificMetrics = []string{"^machine_(memory|cpu).*","^container_fs_*", "^container_cpu_*"}
+	ignoreSpecificMetrics = []string{"^machine_(memory|cpu).*", "^container_fs_*", "^container_cpu_*"}
 )
+
 func TestNewDenyList(t *testing.T) {
 	denyList, _ := NewDenyList(ignoreSpecificMetrics)
 	c := NewPrometheusCollector(testSubcontainersInfoProvider{}, func(container *info.ContainerInfo) map[string]string {
@@ -38,7 +42,7 @@ func TestNewDenyList(t *testing.T) {
 	reg := prometheus.NewRegistry()
 	reg.MustRegister(c)
 
-	testDenyList_IsDenied(t, reg, "testdata/prometheus_metrics_test_denylist")
+	testDenyList_IsDenied(t, reg, "testdata/prometheus_metrics_denylist")
 
 }
 
@@ -52,4 +56,25 @@ func testDenyList_IsDenied(t *testing.T, gatherer prometheus.Gatherer, metricsFi
 	if err != nil {
 		t.Fatalf("Metric comparison failed: %s", err)
 	}
+}
+
+func TestNewDenyListWithMachine(t *testing.T) {
+	denyList, _ := NewDenyList(ignoreSpecificMetrics)
+	collector := NewPrometheusMachineCollector(testSubcontainersInfoProvider{}, container.AllMetrics, denyList)
+	registry := prometheus.NewRegistry()
+	registry.MustRegister(collector)
+
+	metricsFamily, err := registry.Gather()
+	assert.Nil(t, err)
+
+	var metricBuffer bytes.Buffer
+	for _, metricFamily := range metricsFamily {
+		_, err := expfmt.MetricFamilyToText(&metricBuffer, metricFamily)
+		assert.Nil(t, err)
+	}
+	collectedMetrics := metricBuffer.String()
+
+	expectedMetrics, err := ioutil.ReadFile("testdata/prometheus_machine_metrics_denylist")
+	assert.Nil(t, err)
+	assert.Equal(t, string(expectedMetrics), collectedMetrics)
 }
