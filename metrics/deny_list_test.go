@@ -46,7 +46,7 @@ func TestNewDenyList(t *testing.T) {
 
 }
 
-func testDenyList_IsDenied(t *testing.T, gatherer prometheus.Gatherer, metricsFile string) {
+func testDenyListIsDenied(t *testing.T, gatherer prometheus.Gatherer, metricsFile string) {
 	wantMetrics, err := os.Open(metricsFile)
 	if err != nil {
 		t.Fatalf("unable to read input test file %s", metricsFile)
