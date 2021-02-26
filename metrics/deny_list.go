@@ -25,10 +25,10 @@ type DenyList struct {
 
 // New constructs a new DenyList based on a white- and a
 // DenyList. Only one of them can be not empty.
-func NewDenyList(b map[string]struct{}) (*DenyList, error) {
+func NewDenyList(b []string) (*DenyList, error) {
 	l := &DenyList{}
 	var regs []*regexp.Regexp
-	for item := range b {
+	for _, item := range b {
 		r, err := regexp.Compile(item)
 		if err != nil {
 			return nil, err

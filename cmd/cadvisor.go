@@ -23,7 +23,6 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
-	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -112,7 +111,7 @@ var (
 		container.CPUTopologyMetrics:             struct{}{},
 		container.ResctrlMetrics:                 struct{}{},
 	}
-	ignoreSpecificMetrics DenyList = make(map[string]struct{})
+	ignoreSpecificMetrics DenyList = DenyList{}
 )
 
 type metricSetValue struct {
@@ -142,35 +141,22 @@ func (ml *metricSetValue) Set(value string) error {
 	return nil
 }
 
-type DenyList map[string]struct{}
+type DenyList []string
 
 func (ms *DenyList) String() string {
-	s := *ms
-	ss := s.asSlice()
-	sort.Strings(ss)
-	return strings.Join(ss, ",")
+	return strings.Join(*ms, ",")
 }
 
-// Set converts a comma-separated string of metrics into a slice and appends it to the MetricSet.
+// Set converts a comma-separated string of metrics into a slice and appends it to the DenyList.
 func (ms *DenyList) Set(value string) error {
-	s := *ms
 	metrics := strings.Split(value, ",")
 	for _, metric := range metrics {
 		metric = strings.TrimSpace(metric)
 		if len(metric) != 0 {
-			s[metric] = struct{}{}
+			*ms = append(*ms, metric)
 		}
 	}
 	return nil
-}
-
-// asSlice returns the MetricSet in the form of plain string slice.
-func (ms DenyList) asSlice() []string {
-	metrics := []string{}
-	for metric := range ms {
-		metrics = append(metrics, metric)
-	}
-	return metrics
 }
 
 func init() {
