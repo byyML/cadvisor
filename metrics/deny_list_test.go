@@ -15,9 +15,12 @@
 package metrics
 
 import (
-	//"github.com/prometheus/client_golang/prometheus/testutil"
+	"bufio"
+	"io"
+	"strings"
+
 	"github.com/stretchr/testify/assert"
-	//"os"
+	"os"
 	"testing"
 )
 
@@ -29,16 +32,44 @@ func TestNewDenyList(t *testing.T) {
 	denyList, err := NewDenyList(ignoreSpecificMetrics)
 	assert.Nil(t, err)
 
-	testDenyListIsDenied(t, denyList, "testdata/prometheus_all_metrics_name")
+	testDenyListIsDenied(t, denyList, "testdata/deny_metrics")
+	testDenyListAllowed(t, denyList, "testdata/allow_metrics")
 
 }
 
 func testDenyListIsDenied(t *testing.T, denyList *DenyList, metricsFile string) {
-	//wantMetrics, err := os.Open(metricsFile)
-	//if err != nil {
-	//	t.Fatalf("unable to read input test file %s", metricsFile)
-	//}
-	//
-	//assert.Equal()
+	deniedMetrics, err := os.Open(metricsFile)
+	if err != nil {
+		t.Fatalf("unable to read input test file %s", metricsFile)
+	}
+	buf := bufio.NewReader(deniedMetrics)
+	for {
+		line, err := buf.ReadString('\n')
+		line = strings.TrimSpace(line)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+		}
+		assert.True(t, denyList.IsDenied(line))
+
+	}
 }
 
+func testDenyListAllowed(t *testing.T, denyList *DenyList, metricsFile string) {
+	allowedMetrics, err := os.Open(metricsFile)
+	if err != nil {
+		t.Fatalf("unable to read input test file %s", metricsFile)
+	}
+	buf := bufio.NewReader(allowedMetrics)
+	for {
+		line, err := buf.ReadString('\n')
+		line = strings.TrimSpace(line)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+		}
+		assert.False(t, denyList.IsDenied(line))
+	}
+}

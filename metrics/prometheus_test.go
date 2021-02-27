@@ -34,7 +34,7 @@ var now = clock.NewFakeClock(time.Unix(1395066363, 0))
 
 func TestPrometheusCollector(t *testing.T) {
 	denyList, err := NewDenyList([]string{})
-        assert.Nil(t, err)
+	assert.Nil(t, err)
 	c := NewPrometheusCollector(testSubcontainersInfoProvider{}, func(container *info.ContainerInfo) map[string]string {
 		s := DefaultContainerLabels(container)
 		s["zone.name"] = "hello"
@@ -126,7 +126,7 @@ func TestPrometheusCollector_scrapeFailure(t *testing.T) {
 }
 
 func TestNewPrometheusCollectorWithPerf(t *testing.T) {
-	denyList, err :=  NewDenyList([]string{})
+	denyList, err := NewDenyList([]string{})
 	assert.Nil(t, err)
 	c := NewPrometheusCollector(&mockInfoProvider{}, mockLabelFunc, container.MetricSet{container.PerfMetrics: struct{}{}}, now, v2.RequestOptions{}, denyList)
 	assert.Len(t, c.containerMetrics, 5)

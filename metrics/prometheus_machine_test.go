@@ -16,15 +16,15 @@ package metrics
 
 import (
 	"bytes"
-	"os"
 	"io/ioutil"
+	"os"
 	"reflect"
 	"testing"
 	"time"
 
-	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/google/cadvisor/container"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/prometheus/common/expfmt"
 	"github.com/stretchr/testify/assert"
 )
@@ -89,7 +89,6 @@ func TestPrometheusMachineCollectorWithDenyList(t *testing.T) {
 	testPrometheusMachineCollectorWithIsDenied(t, registry, "testdata/prometheus_machine_metrics_denylist")
 
 }
-
 
 func testPrometheusMachineCollectorWithIsDenied(t *testing.T, gatherer prometheus.Gatherer, metricsFile string) {
 	wantMetrics, err := os.Open(metricsFile)
